@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Draggable Word Blocks</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    #inputArea {
+      margin-bottom: 20px;
+    }
+
+    #blocksContainer {
+      position: relative;
+      width: 100%;
+      height: 80vh;
+      border: 2px dashed #ccc;
+      overflow: hidden;
+    }
+
+    .word-block {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: #3498db;
+      color: white;
+      border-radius: 8px;
+      position: absolute;
+      cursor: move;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="inputArea">
+    <input type="text" id="wordsInput" placeholder="Enter 10 words separated by spaces" size="50"/>
+    <button onclick="createBlocks()">Submit</button>
+  </div>
+
+  <div id="blocksContainer"></div>
+
+  <script>
+    function createBlocks() {
+      const container = document.getElementById('blocksContainer');
+      container.innerHTML = ''; // Clear previous blocks
+
+      const input = document.getElementById('wordsInput').value.trim();
+      const words = input.split(/\s+/).slice(0, 10); // Max 10 words
+
+      words.forEach((word, index) => {
+        const block = document.createElement('div');
+        block.className = 'word-block';
+        block.innerText = word;
+
+        block.style.left = `${20 + (index * 60)}px`;
+        block.style.top = `${20 + (index * 40)}px`;
+
+        makeDraggable(block);
+        container.appendChild(block);
+      });
+    }
+
+    function makeDraggable(el) {
+      let offsetX, offsetY;
+
+      el.addEventListener('mousedown', (e) => {
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      });
+
+      function onMouseMove(e) {
+        el.style.left = `${e.clientX - offsetX}px`;
+        el.style.top = `${e.clientY - offsetY}px`;
+      }
+
+      function onMouseUp() {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+    }
+  </script>
+</body>
+</html>
